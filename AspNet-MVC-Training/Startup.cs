@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using AspNet_MVC_Training.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace AspNet_MVC_Training
 {
     public class Startup
@@ -24,6 +27,9 @@ namespace AspNet_MVC_Training
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            
+            services.AddDbContext<AspNet_MVC_TrainingContext>(options =>
+            options.UseSqlite(Configuration.GetConnectionString("AspNet_MVC_TrainingContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
