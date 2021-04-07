@@ -1,4 +1,4 @@
-@model IEnumerable<AspNet_MVC_Training.Models.Training>
+@model AspNet_MVC_Training.Models.TrainingCategoryViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,32 +9,51 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="Trainings" asp-action="Index" method="get">
+    <p>
+
+        <select asp-for="TrainingCategory" asp-items="Model.Categories">
+            <option value="">All</option>
+        </select>
+
+        Title: <input type="text" asp-for="SearchString" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Trainings[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReleaseDate)
+                @Html.DisplayNameFor(model => model.Trainings[0].Image)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
+                @Html.DisplayNameFor(model => model.Trainings[0].ReleaseDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model.Trainings[0].Category)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Former)
+                @Html.DisplayNameFor(model => model.Trainings[0].Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Trainings[0].Former)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Trainings) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Image)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReleaseDate)

@@ -20,9 +20,35 @@ namespace AspNet_MVC_Training.Controllers
         }
 
         // GET: Trainings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string trainingCategory, string searchString)
         {
-            return View(await _context.Training.ToListAsync());
+            // Use LINQ to get list of categories.
+            IQueryable<string> categoryQuery = from m in _context.Training
+                                            orderby m.Category
+                                            select m.Category;
+
+            var trainings = from t in _context.Training
+                        select t;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                searchString = searchString.ToLower();
+                trainings = trainings.Where(s => s.Title.ToLower().Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(trainingCategory))
+            {
+                trainingCategory = trainingCategory.ToLower();
+                trainings = trainings.Where(x => x.Category.ToLower() == trainingCategory);
+            }
+
+            var trainingCategoryVM = new TrainingCategoryViewModel
+            {
+                Categories = new SelectList(await categoryQuery.Distinct().ToListAsync()),
+                Trainings = await trainings.ToListAsync()
+            };
+
+            return View(trainingCategoryVM);
         }
 
         // GET: Trainings/Details/5
@@ -54,7 +80,7 @@ namespace AspNet_MVC_Training.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Category,Price,Former")] Training training)
+        public async Task<IActionResult> Create([Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +112,7 @@ namespace AspNet_MVC_Training.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Category,Price,Former")] Training training)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
         {
             if (id != training.Id)
             {

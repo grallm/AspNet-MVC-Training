@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AspNet_MVC_Training.Migrations
 {
     [DbContext(typeof(AspNet_MVC_TrainingContext))]
-    [Migration("20210407124258_InitialCreate")]
+    [Migration("20210407132210_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,6 +28,9 @@ namespace AspNet_MVC_Training.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Former")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Image")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")

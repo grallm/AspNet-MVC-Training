@@ -28,6 +28,9 @@ namespace AspNet_MVC_Training.Migrations
                     b.Property<string>("Former")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
