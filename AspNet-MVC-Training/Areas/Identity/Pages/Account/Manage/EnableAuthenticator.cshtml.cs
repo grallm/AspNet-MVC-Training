@@ -148,7 +148,7 @@ namespace AspNet_MVC_Training.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("AspNet_MVC_Training"),
+                _urlEncoder.Encode("Learn4Life <3"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }
