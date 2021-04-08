@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using AspNet_MVC_Training.Data;
+using AspNet_MVC_Training.Areas.Identity.Data;
 
 namespace AspNet_MVC_Training.Models
 {
@@ -10,9 +10,9 @@ namespace AspNet_MVC_Training.Models
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new AspNet_MVC_TrainingContext(
+            using (var context = new IdentityDataContext(
                 serviceProvider.GetRequiredService<
-                    DbContextOptions<AspNet_MVC_TrainingContext>>()))
+                    DbContextOptions<IdentityDataContext>>()))
             {
                 // Look for any movies.
                 if (context.Training.Any())

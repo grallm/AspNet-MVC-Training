@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AspNet_MVC_Training.Migrations.IdentityData
+namespace AspNet_MVC_Training.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,6 +44,24 @@ namespace AspNet_MVC_Training.Migrations.IdentityData
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Training",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Image = table.Column<string>(type: "TEXT", nullable: true),
+                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Category = table.Column<string>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Former = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Training", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,6 +224,9 @@ namespace AspNet_MVC_Training.Migrations.IdentityData
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Training");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

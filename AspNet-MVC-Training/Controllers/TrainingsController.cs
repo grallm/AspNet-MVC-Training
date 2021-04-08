@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AspNet_MVC_Training.Data;
 using AspNet_MVC_Training.Models;
+using AspNet_MVC_Training.Areas.Identity.Data;
 
 namespace AspNet_MVC_Training.Controllers
 {
     public class TrainingsController : Controller
     {
-        private readonly AspNet_MVC_TrainingContext _context;
+        private readonly IdentityDataContext _context;
 
-        public TrainingsController(AspNet_MVC_TrainingContext context)
+        public TrainingsController(IdentityDataContext context)
         {
             _context = context;
         }

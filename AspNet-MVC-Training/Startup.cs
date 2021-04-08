@@ -9,8 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using AspNet_MVC_Training.Data;
 using Microsoft.EntityFrameworkCore;
+using AspNet_MVC_Training.Areas.Identity.Data;
 
 namespace AspNet_MVC_Training
 {
@@ -28,7 +28,7 @@ namespace AspNet_MVC_Training
         {
             services.AddControllersWithViews();
             
-            services.AddDbContext<AspNet_MVC_TrainingContext>(options =>
+            services.AddDbContext<IdentityDataContext>(options =>
             options.UseSqlite(Configuration.GetConnectionString("AspNet_MVC_TrainingContext")));
         }
 
