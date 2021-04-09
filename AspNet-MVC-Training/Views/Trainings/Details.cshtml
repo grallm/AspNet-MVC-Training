@@ -1,52 +1,21 @@
 @model AspNet_MVC_Training.Models.Training
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
-
 <div>
-    <h4>Training</h4>
+    <h4 class="mb-1">@Html.DisplayFor(model => model.Title)</h4>
+    <div class="badge bg-primary">@Html.DisplayFor(model => model.Category)</div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap mt-2">
+      <h6 class="text-muted me-2 mb-0">@(Model.Former == null ? "Learn4Life" : Html.DisplayFor(model => model.Former.UserName))</h6>
+      <span class="card-subtitle text-muted">@Html.DisplayFor(model => model.ReleaseDate)</span>
+    </div>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Former)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Former.UserName)
-        </dd>
-    </dl>
+
+    <div class="row">
+      @if (Model.Video != null)
+      {
+        <div class="d-flex justify-content-center mb-3">@Html.Raw(Model.Video)</div>
+      }
+      <div>@Html.Raw(Model.Content)</div>
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.TrainingID">Edit</a> |

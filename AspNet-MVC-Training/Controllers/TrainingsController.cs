@@ -60,6 +60,7 @@ namespace AspNet_MVC_Training.Controllers
         }
 
         // GET: Trainings/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -75,8 +76,7 @@ namespace AspNet_MVC_Training.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation(training.Former == null ? "true" : "false");
-            _logger.LogInformation(training.UserId);
+            ViewBag.Title = training.Title;
 
             return View(training);
         }
@@ -93,6 +93,7 @@ namespace AspNet_MVC_Training.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(string Title,string Image, DateTime ReleaseDate, string Category, decimal Price)
         // public async Task<IActionResult> Create([Bind("TrainingID,Title,Image,ReleaseDate,Category,Price")] Training training)
         {
@@ -120,6 +121,7 @@ namespace AspNet_MVC_Training.Controllers
         }
 
         // GET: Trainings/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -140,6 +142,7 @@ namespace AspNet_MVC_Training.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
         {
             if (id != training.TrainingID)
@@ -171,6 +174,7 @@ namespace AspNet_MVC_Training.Controllers
         }
 
         // GET: Trainings/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -191,6 +195,7 @@ namespace AspNet_MVC_Training.Controllers
         // POST: Trainings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var training = await _context.Training.FindAsync(id);
