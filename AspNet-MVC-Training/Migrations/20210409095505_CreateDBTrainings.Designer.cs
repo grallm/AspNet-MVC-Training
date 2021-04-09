@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AspNet_MVC_Training.Migrations
 {
     [DbContext(typeof(IdentityDataContext))]
-    [Migration("20210408104525_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210409095505_CreateDBTrainings")]
+    partial class CreateDBTrainings
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,17 +20,13 @@ namespace AspNet_MVC_Training.Migrations
 
             modelBuilder.Entity("AspNet_MVC_Training.Models.Training", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("TrainingID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Former")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Image")
                         .HasColumnType("TEXT");
@@ -45,7 +41,12 @@ namespace AspNet_MVC_Training.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TrainingID");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Training");
                 });
@@ -244,6 +245,15 @@ namespace AspNet_MVC_Training.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("AspNet_MVC_Training.Models.Training", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Former")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Former");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

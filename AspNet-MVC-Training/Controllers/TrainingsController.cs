@@ -7,16 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNet_MVC_Training.Models;
 using AspNet_MVC_Training.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AspNet_MVC_Training.Controllers
 {
     public class TrainingsController : Controller
     {
         private readonly IdentityDataContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<TrainingsController> _logger;
 
-        public TrainingsController(IdentityDataContext context)
+        public TrainingsController(IdentityDataContext context, UserManager<IdentityUser> userManager, ILogger<TrainingsController> logger)
         {
             _context = context;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: Trainings
@@ -60,16 +68,21 @@ namespace AspNet_MVC_Training.Controllers
             }
 
             var training = await _context.Training
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(t => t.Former)
+                .FirstOrDefaultAsync(m => m.TrainingID == id);
             if (training == null)
             {
                 return NotFound();
             }
 
+            _logger.LogInformation(training.Former == null ? "true" : "false");
+            _logger.LogInformation(training.UserId);
+
             return View(training);
         }
 
         // GET: Trainings/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -80,9 +93,24 @@ namespace AspNet_MVC_Training.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
+        public async Task<IActionResult> Create(string Title,string Image, DateTime ReleaseDate, string Category, decimal Price)
+        // public async Task<IActionResult> Create([Bind("TrainingID,Title,Image,ReleaseDate,Category,Price")] Training training)
         {
-            if (ModelState.IsValid)
+            // Allow only logged in user to create
+            if (!User.Identity.IsAuthenticated) {
+                return View();
+            }
+
+            Training training = new Training {
+              Title = Title,
+              Image = Image,
+              ReleaseDate = ReleaseDate,
+              Category = Category,
+              Price = Price,
+              Former = await _userManager.GetUserAsync(User)
+            };
+
+            if (TryValidateModel(training, nameof(Training)))
             {
                 _context.Add(training);
                 await _context.SaveChangesAsync();
@@ -114,7 +142,7 @@ namespace AspNet_MVC_Training.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
         {
-            if (id != training.Id)
+            if (id != training.TrainingID)
             {
                 return NotFound();
             }
@@ -128,7 +156,7 @@ namespace AspNet_MVC_Training.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TrainingExists(training.Id))
+                    if (!TrainingExists(training.TrainingID))
                     {
                         return NotFound();
                     }
@@ -151,7 +179,7 @@ namespace AspNet_MVC_Training.Controllers
             }
 
             var training = await _context.Training
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.TrainingID == id);
             if (training == null)
             {
                 return NotFound();
@@ -173,7 +201,7 @@ namespace AspNet_MVC_Training.Controllers
 
         private bool TrainingExists(int id)
         {
-            return _context.Training.Any(e => e.Id == id);
+            return _context.Training.Any(e => e.TrainingID == id);
         }
     }
 }

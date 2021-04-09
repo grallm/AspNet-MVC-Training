@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AspNet_MVC_Training.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class CreateDBTrainings : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,24 +44,6 @@ namespace AspNet_MVC_Training.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Training",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Image = table.Column<string>(type: "TEXT", nullable: true),
-                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Category = table.Column<string>(type: "decimal(18,2)", nullable: false),
-                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Former = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Training", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,6 +152,30 @@ namespace AspNet_MVC_Training.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Training",
+                columns: table => new
+                {
+                    TrainingID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Image = table.Column<string>(type: "TEXT", nullable: true),
+                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Category = table.Column<string>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Training", x => x.TrainingID);
+                    table.ForeignKey(
+                        name: "FK_Training_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -206,6 +212,11 @@ namespace AspNet_MVC_Training.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Training_UserId",
+                table: "Training",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
