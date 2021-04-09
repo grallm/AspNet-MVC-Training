@@ -1,3 +1,4 @@
+using AspNet_MVC_Training.Areas.Identity.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 

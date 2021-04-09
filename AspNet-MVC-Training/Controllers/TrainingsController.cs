@@ -91,6 +91,15 @@ namespace AspNet_MVC_Training.Controllers
                 return NotFound();
             }
 
+            ApplicationUser userReq = await _userManager.GetUserAsync(User);
+            ApplicationUser user = await _userManager.Users
+              .Include(u => u.UserTrainings)
+              .SingleAsync(u => u.Equals(userReq));
+            
+            if (user.UserTrainings.FirstOrDefault(ut => ut.TrainingID == id) == null) {
+              return RedirectToAction(nameof(Index));
+            }
+
             ViewBag.Title = training.Title;
 
             return View(training);
@@ -116,7 +125,7 @@ namespace AspNet_MVC_Training.Controllers
             if (!User.Identity.IsAuthenticated) {
                 return View();
             }
-
+            
             Training training = new Training {
               Title = Title,
               Image = Image,
@@ -129,9 +138,15 @@ namespace AspNet_MVC_Training.Controllers
               Former = await _userManager.GetUserAsync(User)
             };
 
+            UserTraining userTraining = new UserTraining {
+              User = training.Former,
+              Training = training
+            };
+
             if (TryValidateModel(training, nameof(Training)))
             {
                 _context.Add(training);
+                _context.Add(userTraining);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
