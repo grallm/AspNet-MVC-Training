@@ -94,7 +94,7 @@ namespace AspNet_MVC_Training.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create(string Title,string Image, DateTime ReleaseDate, string Category, decimal Price)
+        public async Task<IActionResult> Create(string Title, string Image, string Category, decimal Price, string Description, string Content, string Video)
         // public async Task<IActionResult> Create([Bind("TrainingID,Title,Image,ReleaseDate,Category,Price")] Training training)
         {
             // Allow only logged in user to create
@@ -105,7 +105,10 @@ namespace AspNet_MVC_Training.Controllers
             Training training = new Training {
               Title = Title,
               Image = Image,
-              ReleaseDate = ReleaseDate,
+              Description = Description,
+              Content = Content,
+              Video = Video,
+              ReleaseDate = DateTime.Now,
               Category = Category,
               Price = Price,
               Former = await _userManager.GetUserAsync(User)
@@ -207,6 +210,19 @@ namespace AspNet_MVC_Training.Controllers
         private bool TrainingExists(int id)
         {
             return _context.Training.Any(e => e.TrainingID == id);
+        }
+
+        // POST: Trainings/Register/5
+        // Register for a training
+        [HttpPost, ActionName("Register")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Register(int id)
+        {
+            var training = await _context.Training.FindAsync(id);
+            _context.Training.Remove(training);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

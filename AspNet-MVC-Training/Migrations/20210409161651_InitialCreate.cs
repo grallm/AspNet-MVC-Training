@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AspNet_MVC_Training.Migrations
 {
-    public partial class CreateDBTrainings : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,6 +26,7 @@ namespace AspNet_MVC_Training.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Discriminator = table.Column<string>(type: "TEXT", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -160,6 +161,9 @@ namespace AspNet_MVC_Training.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     Image = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    Video = table.Column<string>(type: "TEXT", nullable: true),
                     ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Category = table.Column<string>(type: "decimal(18,2)", nullable: false),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
@@ -174,6 +178,31 @@ namespace AspNet_MVC_Training.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTraining",
+                columns: table => new
+                {
+                    TrainingID = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    Finished = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTraining", x => new { x.UserId, x.TrainingID });
+                    table.ForeignKey(
+                        name: "FK_UserTraining_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserTraining_Training_TrainingID",
+                        column: x => x.TrainingID,
+                        principalTable: "Training",
+                        principalColumn: "TrainingID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -217,6 +246,11 @@ namespace AspNet_MVC_Training.Migrations
                 name: "IX_Training_UserId",
                 table: "Training",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTraining_TrainingID",
+                table: "UserTraining",
+                column: "TrainingID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -237,10 +271,13 @@ namespace AspNet_MVC_Training.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Training");
+                name: "UserTraining");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Training");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

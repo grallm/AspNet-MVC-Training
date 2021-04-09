@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AspNet_MVC_Training.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace AspNet_MVC_Training.Models
@@ -30,10 +31,26 @@ namespace AspNet_MVC_Training.Models
         [ForeignKey("UserId")]
         public virtual IdentityUser Former { get; set; }
 
-    public override string ToString()
-    {
-      return $"{{TrainingID = {this.TrainingID}, Title = {this.Title}, Image = {this.Image}, ReleaseDate = {this.ReleaseDate}, Category = {this.Category}, Price = {this.Price}, Former = {this.Former}}}";
+      public override string ToString()
+      {
+        return $"{{TrainingID = {this.TrainingID}, Title = {this.Title}, Image = {this.Image}, ReleaseDate = {this.ReleaseDate}, Category = {this.Category}, Price = {this.Price}, Former = {this.Former}}}";
+      }
+
     }
 
+    public class UserTraining {
+      public int TrainingID { get; set; }
+
+      [ForeignKey("TrainingID")]
+      [Required]
+      public virtual Training Training { get; set; }
+      
+      public string UserId {get; set;}
+      
+      [ForeignKey("UserId")]
+      [Required]
+      public virtual ApplicationUser Former { get; set; }
+      
+      public bool Finished { get; set; }
     }
 }

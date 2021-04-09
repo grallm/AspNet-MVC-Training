@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>List of formation offers</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -31,7 +31,7 @@
           <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
           <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former))</h6>
           <div class="d-flex align-items-center justify-content-between flex-wrap">
-            <div class="badge bg-primary me-2">@Html.DisplayFor(modelItem => item.Category)</div>
+            <div class="badge bg-primary me-2 word-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
             <span class="card-subtitle text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
           </div>
           <p class="card-text mt-3">@Html.DisplayFor(modelItem => item.Description)</p>

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AspNet_MVC_Training.Migrations
 {
     [DbContext(typeof(IdentityDataContext))]
-    [Migration("20210409110810_TrainingContent")]
-    partial class TrainingContent
+    [Migration("20210409161651_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,6 +59,24 @@ namespace AspNet_MVC_Training.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Training");
+                });
+
+            modelBuilder.Entity("AspNet_MVC_Training.Models.UserTraining", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TrainingID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserId", "TrainingID");
+
+                    b.HasIndex("TrainingID");
+
+                    b.ToTable("UserTraining");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -122,6 +140,10 @@ namespace AspNet_MVC_Training.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
@@ -172,6 +194,8 @@ namespace AspNet_MVC_Training.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -257,6 +281,13 @@ namespace AspNet_MVC_Training.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("AspNet_MVC_Training.Areas.Identity.Data.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
             modelBuilder.Entity("AspNet_MVC_Training.Models.Training", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Former")
@@ -264,6 +295,25 @@ namespace AspNet_MVC_Training.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Former");
+                });
+
+            modelBuilder.Entity("AspNet_MVC_Training.Models.UserTraining", b =>
+                {
+                    b.HasOne("AspNet_MVC_Training.Models.Training", "Training")
+                        .WithMany()
+                        .HasForeignKey("TrainingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AspNet_MVC_Training.Areas.Identity.Data.ApplicationUser", "Former")
+                        .WithMany("UserTrainings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Former");
+
+                    b.Navigation("Training");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -315,6 +365,11 @@ namespace AspNet_MVC_Training.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AspNet_MVC_Training.Areas.Identity.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("UserTrainings");
                 });
 #pragma warning restore 612, 618
         }
