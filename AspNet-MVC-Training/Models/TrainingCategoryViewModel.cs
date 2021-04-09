@@ -7,6 +7,7 @@ namespace AspNet_MVC_Training.Models
     {
         public List<Training> Trainings { get; set; }
         public SelectList Categories { get; set; }
+        public IList<int> UserFormations { get; set; }
         public string TrainingCategory { get; set; }
         public string SearchString { get; set; }
     }

@@ -49,12 +49,26 @@ namespace AspNet_MVC_Training.Controllers
                 trainings = trainings.Where(x => x.Category.ToLower() == trainingCategory);
             }
 
+            // Populate with Formers
             trainings = trainings.Include(t => t.Former);
+            
+            // Get User's registered formations
+            List<int> registeredFormations = new List<int>();
+            ApplicationUser userReq = await _userManager.GetUserAsync(User);
+            // Populate UserTraining
+            ApplicationUser user = await _userManager.Users
+              .Include(u => u.UserTrainings)
+              .SingleAsync(u => u.Equals(userReq));
+
+            if (user != null) {
+              registeredFormations = user.UserTrainings.Select(ut => ut.TrainingID).ToList();
+            }
 
             var trainingCategoryVM = new TrainingCategoryViewModel
             {
                 Categories = new SelectList(await categoryQuery.Distinct().ToListAsync()),
-                Trainings = await trainings.ToListAsync()
+                Trainings = await trainings.ToListAsync(),
+                UserFormations = registeredFormations
             };
 
             return View(trainingCategoryVM);
