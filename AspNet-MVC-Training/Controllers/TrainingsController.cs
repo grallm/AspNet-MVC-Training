@@ -10,17 +10,16 @@ using AspNet_MVC_Training.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AspNet_MVC_Training.Controllers
 {
     public class TrainingsController : Controller
     {
         private readonly IdentityDataContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<TrainingsController> _logger;
 
-        public TrainingsController(IdentityDataContext context, UserManager<IdentityUser> userManager, ILogger<TrainingsController> logger)
+        public TrainingsController(IdentityDataContext context, UserManager<ApplicationUser> userManager, ILogger<TrainingsController> logger)
         {
             _context = context;
             _userManager = userManager;
@@ -49,6 +48,8 @@ namespace AspNet_MVC_Training.Controllers
                 trainingCategory = trainingCategory.ToLower();
                 trainings = trainings.Where(x => x.Category.ToLower() == trainingCategory);
             }
+
+            trainings = trainings.Include(t => t.Former);
 
             var trainingCategoryVM = new TrainingCategoryViewModel
             {
@@ -217,11 +218,23 @@ namespace AspNet_MVC_Training.Controllers
         [HttpPost, ActionName("Register")]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Register(int id)
+        public async Task<IActionResult> Register(int TrainingID)
         {
-            var training = await _context.Training.FindAsync(id);
-            _context.Training.Remove(training);
+            var training = await _context.Training.FindAsync(TrainingID);
+            
+            if (training == null) {
+              return RedirectToAction(nameof(Index));
+            }
+
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+
+            UserTraining userTraining = new UserTraining {
+              UserId = user.Id,
+              TrainingID = training.TrainingID
+            };
+            _context.Add(userTraining);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }

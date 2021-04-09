@@ -19,7 +19,7 @@ namespace AspNet_MVC_Training.Areas.Identity
                     options.UseSqlite(
                         context.Configuration.GetConnectionString("AspNet_MVC_TrainingContext")));
 
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                     .AddEntityFrameworkStores<IdentityDataContext>();
             });
         }

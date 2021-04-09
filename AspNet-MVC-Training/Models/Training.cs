@@ -29,7 +29,7 @@ namespace AspNet_MVC_Training.Models
         public string UserId {get; set;}
 
         [ForeignKey("UserId")]
-        public virtual IdentityUser Former { get; set; }
+        public virtual ApplicationUser Former { get; set; }
 
       public override string ToString()
       {
@@ -49,7 +49,7 @@ namespace AspNet_MVC_Training.Models
       
       [ForeignKey("UserId")]
       [Required]
-      public virtual ApplicationUser Former { get; set; }
+      public virtual ApplicationUser User { get; set; }
       
       public bool Finished { get; set; }
     }

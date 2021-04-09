@@ -1,4 +1,6 @@
-@inject SignInManager<IdentityUser> SignInManager
+@using AspNet_MVC_Training.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

@@ -22,20 +22,26 @@
     </p>
 </form>
 
-<div class="row row-cols-1 row-cols-md-4 g-4">
+<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
   @foreach (var item in Model.Trainings) {
     <div class="col">
       <div class="card h-100 justify-content-between">
         <img src="@item.Image" class="card-img-top" alt="@item.Title">
         <div class="card-body flex-col">
           <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
-          <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former))</h6>
+          <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former.UserName))</h6>
           <div class="d-flex align-items-center justify-content-between flex-wrap">
-            <div class="badge bg-primary me-2 word-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
-            <span class="card-subtitle text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
+            <div class="badge bg-primary me-2 word-wrap mb-1 text-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
+            <span class="card-subtitle text-muted mb-1">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
           </div>
           <p class="card-text mt-3">@Html.DisplayFor(modelItem => item.Description)</p>
-          <a href="#" class="btn btn-outline-success">Buy <span class="fw-bold">@Html.DisplayFor(modelItem => item.Price)€</span></a>
+
+
+          <form asp-action="Register" class="d-flex justify-content-between align-items-center">
+            <div class="fw-bold text-success">@Html.DisplayFor(modelItem => item.Price)€</div>
+            <input type="hidden" name="TrainingID" id="TrainingID" value="@item.TrainingID" />
+            <input type="submit" value="Buy" class="btn btn-outline-success" />
+          </form>
         </div>
       </div>
     </div>

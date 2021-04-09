@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspNet_MVC_Training.Areas.Identity.Data
 {
-    public class IdentityDataContext : IdentityDbContext<IdentityUser>
+    public class IdentityDataContext : IdentityDbContext<ApplicationUser>
     {
         public IdentityDataContext(DbContextOptions<IdentityDataContext> options)
             : base(options)
