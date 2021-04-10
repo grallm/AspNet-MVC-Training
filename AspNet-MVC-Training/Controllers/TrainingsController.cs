@@ -10,6 +10,9 @@ using AspNet_MVC_Training.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AspNet_MVC_Training.Controllers
 {
@@ -54,14 +57,17 @@ namespace AspNet_MVC_Training.Controllers
             
             // Get User's registered formations
             List<int> registeredFormations = new List<int>();
-            ApplicationUser userReq = await _userManager.GetUserAsync(User);
-            // Populate UserTraining
-            ApplicationUser user = await _userManager.Users
-              .Include(u => u.UserTrainings)
-              .SingleAsync(u => u.Equals(userReq));
 
-            if (user != null) {
-              registeredFormations = user.UserTrainings.Select(ut => ut.TrainingID).ToList();
+            if (User.Identity.IsAuthenticated) {
+              ApplicationUser userReq = await _userManager.GetUserAsync(User);
+              // Populate UserTraining
+              ApplicationUser user = await _userManager.Users
+                .Include(u => u.UserTrainings)
+                .SingleAsync(u => u.Equals(userReq));
+
+              if (user != null) {
+                registeredFormations = user.UserTrainings.Select(ut => ut.TrainingID).ToList();
+              }
             }
 
             var trainingCategoryVM = new TrainingCategoryViewModel
@@ -118,17 +124,16 @@ namespace AspNet_MVC_Training.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create(string Title, string Image, string Category, decimal Price, string Description, string Content, string Video)
+        public async Task<IActionResult> Create(string Title, IFormFile Image, string Category, decimal Price, string Description, string Content, string Video)
         // public async Task<IActionResult> Create([Bind("TrainingID,Title,Image,ReleaseDate,Category,Price")] Training training)
         {
             // Allow only logged in user to create
             if (!User.Identity.IsAuthenticated) {
                 return View();
             }
-            
+
             Training training = new Training {
               Title = Title,
-              Image = Image,
               Description = Description,
               Content = Content,
               Video = Video,
@@ -137,6 +142,19 @@ namespace AspNet_MVC_Training.Controllers
               Price = Price,
               Former = await _userManager.GetUserAsync(User)
             };
+
+            if (Image != null && Image.Length > 0)  
+            {
+              var fileName = Path.GetFileName(Image.FileName);
+              var fileUrl = Path.Combine("images", Guid.NewGuid().ToString() + "_" + fileName);
+              var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileUrl);
+              using (var fileStream = new FileStream(filePath, FileMode.Create))
+              {
+                  await Image.CopyToAsync(fileStream);
+              }
+
+              training.Image = fileUrl;
+            }  
 
             UserTraining userTraining = new UserTraining {
               User = training.Former,
