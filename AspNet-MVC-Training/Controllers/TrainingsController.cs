@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 
 namespace AspNet_MVC_Training.Controllers
 {
@@ -57,6 +56,7 @@ namespace AspNet_MVC_Training.Controllers
             
             // Get User's registered formations
             List<int> registeredFormations = new List<int>();
+            List<UserTraining> UserCart = new List<UserTraining>();
 
             if (User.Identity.IsAuthenticated) {
               ApplicationUser userReq = await _userManager.GetUserAsync(User);
@@ -66,7 +66,9 @@ namespace AspNet_MVC_Training.Controllers
                 .SingleAsync(u => u.Equals(userReq));
 
               if (user != null) {
-                registeredFormations = user.UserTrainings.Select(ut => ut.TrainingID).ToList();
+                registeredFormations = user.UserTrainings.Where(ut => ut.Status != Status.Cart).Select(ut => ut.TrainingID).ToList();
+                
+                UserCart = user.UserTrainings.Where(ut => ut.Status == Status.Cart).ToList();
               }
             }
 
@@ -74,7 +76,8 @@ namespace AspNet_MVC_Training.Controllers
             {
                 Categories = new SelectList(await categoryQuery.Distinct().ToListAsync()),
                 Trainings = await trainings.ToListAsync(),
-                UserFormations = registeredFormations
+                UserFormations = registeredFormations,
+                UserCart = UserCart
             };
 
             return View(trainingCategoryVM);
@@ -102,7 +105,7 @@ namespace AspNet_MVC_Training.Controllers
               .Include(u => u.UserTrainings)
               .SingleAsync(u => u.Equals(userReq));
             
-            if (user.UserTrainings.FirstOrDefault(ut => ut.TrainingID == id) == null) {
+            if (user.UserTrainings.Any(ut => (ut.TrainingID == id && ut.Status != Status.Cart))) {
               return RedirectToAction(nameof(Index));
             }
 
@@ -158,7 +161,8 @@ namespace AspNet_MVC_Training.Controllers
 
             UserTraining userTraining = new UserTraining {
               User = training.Former,
-              Training = training
+              Training = training,
+              Status = Status.Finished
             };
 
             if (TryValidateModel(training, nameof(Training)))
@@ -260,12 +264,12 @@ namespace AspNet_MVC_Training.Controllers
             return _context.Training.Any(e => e.TrainingID == id);
         }
 
-        // POST: Trainings/Register/5
-        // Register for a training
-        [HttpPost, ActionName("Register")]
+        // POST: Trainings/AddToCart/5
+        // Add a formation to User's cart
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Register(int TrainingID)
+        public async Task<IActionResult> AddToCart(int TrainingID)
         {
             var training = await _context.Training.FindAsync(TrainingID);
             
@@ -275,11 +279,42 @@ namespace AspNet_MVC_Training.Controllers
 
             ApplicationUser user = await _userManager.GetUserAsync(User);
 
+            // Find if UserTraining already exists
+            if (await _context.UserTraining.AnyAsync(ut => ut.Training.Equals(training) && ut.User.Equals(user))) {
+              return RedirectToAction(nameof(Index));
+            }
+
             UserTraining userTraining = new UserTraining {
               UserId = user.Id,
-              TrainingID = training.TrainingID
+              TrainingID = training.TrainingID,
+              Status = Status.Cart
             };
             _context.Add(userTraining);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Trainings/RemoveFromCart/5
+        // Remove a formation from User's cart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart(int TrainingID)
+        {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+
+            // Find UserTraining
+            var userTraining = await _context.UserTraining
+              .FirstOrDefaultAsync(ut => 
+                ut.TrainingID == TrainingID && ut.User.Equals(user));
+
+            if (userTraining == null) {
+              return RedirectToAction(nameof(Index));
+            }
+
+            // Remove
+            _context.Remove(userTraining);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

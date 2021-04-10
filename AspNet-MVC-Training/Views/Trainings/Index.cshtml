@@ -6,9 +6,10 @@
 
 <h1>List of formation offers</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="d-flex flex-column align-items-start mb-3">
+    <a asp-action="Create">Create New Formation</a>
+    <a class="btn btn-outline-primary mt-2">Cart <span class="badge bg-primary">@Model.UserCart.Count()</span></a>
+</div>
 
 <form asp-controller="Trainings" asp-action="Index" method="get">
     <p>
@@ -27,23 +28,31 @@
     <div class="col">
       <div class="card h-100 justify-content-between">
         <img src="@item.Image" class="card-img-top" alt="@item.Title">
-        <div class="card-body flex-col">
-          <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
-          <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former.UserName))</h6>
-          <div class="d-flex align-items-center justify-content-between flex-wrap">
-            <div class="badge bg-primary me-2 word-wrap mb-1 text-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
-            <span class="card-subtitle text-muted mb-1">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+            <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former.UserName))</h6>
+            <div class="d-flex align-items-center justify-content-between flex-wrap">
+              <div class="badge bg-primary me-2 word-wrap mb-1 text-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
+              <span class="card-subtitle text-muted mb-1">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
+            </div>
+            <p class="card-text mt-3">@Html.DisplayFor(modelItem => item.Description)</p>
           </div>
-          <p class="card-text mt-3">@Html.DisplayFor(modelItem => item.Description)</p>
 
           @if (Model.UserFormations.Contains(item.TrainingID))
           {
             <a class="btn btn-outline-primary w-100" asp-action="Details" asp-route-id="@item.TrainingID">Follow</a>
-          } else {
-            <form asp-action="Register" class="d-flex justify-content-between align-items-center">
+          } else if (Model.UserCart.Any(ut => ut.TrainingID == item.TrainingID && ut.Status == Status.Cart)) {
+            <form asp-action="RemoveFromCart" class="d-flex justify-content-between align-items-center">
               <div class="fw-bold text-success">@Html.DisplayFor(modelItem => item.Price)€</div>
               <input type="hidden" name="TrainingID" id="TrainingID" value="@item.TrainingID" />
-              <input type="submit" value="Buy" class="btn btn-outline-success" />
+              <input type="submit" value="Remove from cart" class="btn btn-outline-warning" />
+            </form>
+          } else {
+            <form asp-action="AddToCart" class="d-flex justify-content-between align-items-center">
+              <div class="fw-bold text-success">@Html.DisplayFor(modelItem => item.Price)€</div>
+              <input type="hidden" name="TrainingID" id="TrainingID" value="@item.TrainingID" />
+              <input type="submit" value="Add to cart" class="btn btn-outline-success" />
             </form>
           }
         </div>

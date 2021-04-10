@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AspNet_MVC_Training.Areas.Identity.Data;
@@ -39,6 +40,12 @@ namespace AspNet_MVC_Training.Models
 
     }
 
+    public enum Status {
+      Cart,
+      Registered,
+      Finished
+    }
+
     public class UserTraining {
       public int TrainingID { get; set; }
 
@@ -52,6 +59,7 @@ namespace AspNet_MVC_Training.Models
       [Required]
       public virtual ApplicationUser User { get; set; }
       
-      public bool Finished { get; set; }
+      [DefaultValue(Status.Cart)]
+      public Status Status { get; set; }
     }
 }
