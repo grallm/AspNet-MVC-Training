@@ -8,7 +8,7 @@
 
 <div class="d-flex flex-column align-items-start mb-3">
     <a asp-action="Create">Create New Formation</a>
-    <a class="btn btn-outline-primary mt-2">Cart <span class="badge bg-primary">@Model.UserCart.Count()</span></a>
+    <a asp-action="Cart" class="btn btn-outline-primary mt-2">Cart <span class="badge bg-primary">@Model.UserCart.Count()</span></a>
 </div>
 
 <form asp-controller="Trainings" asp-action="Index" method="get">

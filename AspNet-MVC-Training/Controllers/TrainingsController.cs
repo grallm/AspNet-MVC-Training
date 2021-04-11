@@ -297,10 +297,11 @@ namespace AspNet_MVC_Training.Controllers
 
         // POST: Trainings/RemoveFromCart/5
         // Remove a formation from User's cart
+        // Redirect to Cart if Cart true
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> RemoveFromCart(int TrainingID)
+        public async Task<IActionResult> RemoveFromCart(int TrainingID, bool? CartPage)
         {
             ApplicationUser user = await _userManager.GetUserAsync(User);
 
@@ -310,14 +311,39 @@ namespace AspNet_MVC_Training.Controllers
                 ut.TrainingID == TrainingID && ut.User.Equals(user));
 
             if (userTraining == null) {
-              return RedirectToAction(nameof(Index));
+              return RedirectToAction((CartPage ?? false) ? "Cart" : nameof(Index));
             }
 
             // Remove
             _context.Remove(userTraining);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction((CartPage ?? false) ? "Cart" : nameof(Index));
+        }
+
+        // GET: Trainings/Cart
+        [Authorize]
+        public async Task<IActionResult> CartAsync()
+        {
+            ApplicationUser userReq = await _userManager.GetUserAsync(User);
+            // Populate UserTraining
+            ApplicationUser user = await _userManager.Users
+              .Include(u => u.UserTrainings)
+              .SingleAsync(u => u.Equals(userReq));
+
+            var UserCart = user.UserTrainings.Where(ut => ut.Status == Status.Cart).Select(ut => ut.TrainingID).ToList();
+
+            // Redirect if Cart empty
+            if (UserCart.Count() == 0) {
+              return RedirectToAction(nameof(Index));
+            }
+
+            var trainingCategoryVM = new TrainingCategoryViewModel
+            {
+                Trainings = await _context.Training.Where(t => UserCart.Contains(t.TrainingID)).ToListAsync(),
+            };
+
+            return View(trainingCategoryVM);
         }
     }
 }
