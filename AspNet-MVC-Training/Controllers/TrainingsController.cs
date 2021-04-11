@@ -57,11 +57,12 @@ namespace AspNet_MVC_Training.Controllers
             // Get User's registered formations
             List<int> registeredFormations = new List<int>();
             List<UserTraining> UserCart = new List<UserTraining>();
+            ApplicationUser user = null;
 
             if (User.Identity.IsAuthenticated) {
               ApplicationUser userReq = await _userManager.GetUserAsync(User);
               // Populate UserTraining
-              ApplicationUser user = await _userManager.Users
+              user = await _userManager.Users
                 .Include(u => u.UserTrainings)
                 .SingleAsync(u => u.Equals(userReq));
 
@@ -77,7 +78,8 @@ namespace AspNet_MVC_Training.Controllers
                 Categories = new SelectList(await categoryQuery.Distinct().ToListAsync()),
                 Trainings = await trainings.ToListAsync(),
                 UserFormations = registeredFormations,
-                UserCart = UserCart
+                UserCart = UserCart,
+                UserId = user.Id ?? null
             };
 
             return View(trainingCategoryVM);
@@ -244,6 +246,10 @@ namespace AspNet_MVC_Training.Controllers
                 return NotFound();
             }
 
+            if (training.UserId != (await _userManager.GetUserAsync(User)).Id) {
+              return RedirectToAction(nameof(Index));
+            }
+
             return View(training);
         }
 
@@ -251,9 +257,16 @@ namespace AspNet_MVC_Training.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int TrainingID)
         {
-            var training = await _context.Training.FindAsync(id);
+            var training = await _context.Training.FindAsync(TrainingID);
+
+            if (training.UserId != (await _userManager.GetUserAsync(User)).Id) {
+              return RedirectToAction(nameof(Index));
+            }
+
+            new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", training.Image)).Delete();
+
             _context.Training.Remove(training);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

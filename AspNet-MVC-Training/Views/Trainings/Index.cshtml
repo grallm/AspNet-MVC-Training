@@ -39,7 +39,15 @@
             <p class="card-text mt-3">@Html.DisplayFor(modelItem => item.Description)</p>
           </div>
 
-          @if (Model.UserFormations.Contains(item.TrainingID))
+          @if (Model.UserId == item.UserId) {
+            <a class="btn btn-outline-primary w-100 mt-1" asp-action="Details" asp-route-id="@item.TrainingID">Display</a>
+            <a class="btn btn-outline-warning w-100 mt-1" asp-action="Edit" asp-route-id="@item.TrainingID">Edit</a>
+            <form asp-action="Delete" class="w-100 mt-1" method="POST">
+              <input type="hidden" name="TrainingID" id="TrainingID" value="@item.TrainingID" />
+              <input type="submit" value="Delete" class="btn btn-outline-danger w-100" />
+            </form>
+          }
+          else if (Model.UserFormations.Contains(item.TrainingID))
           {
             <a class="btn btn-outline-primary w-100" asp-action="Details" asp-route-id="@item.TrainingID">Follow</a>
           } else if (Model.UserCart.Any(ut => ut.TrainingID == item.TrainingID && ut.Status == Status.Cart)) {

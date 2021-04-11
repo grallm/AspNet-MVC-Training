@@ -12,5 +12,6 @@ namespace AspNet_MVC_Training.Models
         public IList<UserTraining> UserCart { get; set; }
         public string TrainingCategory { get; set; }
         public string SearchString { get; set; }
+        public string UserId { get; set; }
     }
 }
