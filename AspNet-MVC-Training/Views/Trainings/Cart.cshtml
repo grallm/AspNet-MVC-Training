@@ -23,12 +23,14 @@
     </ul>
 
     <div class="w-100 d-flex justify-content-end mt-2">
-      Total <span class="fw-bold ms-1">100.00€</span>
+      Total <span class="fw-bold ms-1">@Model.Trainings.Sum(t => t.Price)€</span>
     </div>
 
     <div class="d-flex justify-content-between align-items-center w-100 mt-4">
-      <a class="btn btn-success btn-lg">Confirm</a>
-      <a class="btn btn-outline-warning btn-lg">Cancel</a>
+      <form asp-action="Cart">
+        <input type="submit" class="btn btn-success btn-lg" value="Confirm" />
+      </form>
+      <a asp-action="Index" class="btn btn-outline-warning btn-lg">Cancel</a>
     </div>
   </div>
 </div>

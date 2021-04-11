@@ -105,7 +105,7 @@ namespace AspNet_MVC_Training.Controllers
               .Include(u => u.UserTrainings)
               .SingleAsync(u => u.Equals(userReq));
             
-            if (user.UserTrainings.Any(ut => (ut.TrainingID == id && ut.Status != Status.Cart))) {
+            if (!user.UserTrainings.Any(ut => (ut.TrainingID == id && ut.Status != Status.Cart))) {
               return RedirectToAction(nameof(Index));
             }
 
@@ -344,6 +344,27 @@ namespace AspNet_MVC_Training.Controllers
             };
 
             return View(trainingCategoryVM);
+        }
+
+        // POST: /Trainings/Cart
+        // Confirm cart, register to all cart's formations
+        [HttpPost, ActionName("Cart")]
+        [Authorize]
+        public async Task<IActionResult> CartConfirmedAsync()
+        {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+
+            // Find all User's Cart formations
+            var cartFormations = await _context.UserTraining.Where(ut => ut.User.Equals(user) && ut.Status == Status.Cart).ToListAsync();
+
+            foreach (var item in cartFormations)
+            {
+              item.Status = Status.Registered;
+              _context.Update(item);
+              await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
