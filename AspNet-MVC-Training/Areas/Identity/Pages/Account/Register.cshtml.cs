@@ -47,6 +47,10 @@ namespace AspNet_MVC_Training.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [StringLength(30, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
+            public string Name { get; set; }
+
+            [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -76,7 +80,7 @@ namespace AspNet_MVC_Training.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 // Create user with by default confirmed email, so the step is not needed
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, EmailConfirmed = true };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, EmailConfirmed = true, Name = Input.Name };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

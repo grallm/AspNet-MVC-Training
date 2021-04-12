@@ -4,7 +4,7 @@
     <h4 class="mb-1">@Html.DisplayFor(model => model.Title)</h4>
     <div class="badge bg-primary">@Html.DisplayFor(model => model.Category)</div>
     <div class="d-flex align-items-center justify-content-between flex-wrap mt-2">
-      <h6 class="text-muted me-2 mb-0">@(Model.Former == null ? "Learn4Life" : Html.DisplayFor(model => model.Former.UserName))</h6>
+      <h6 class="text-muted me-2 mb-0">@(Model.Former == null ? "Learn4Life" : Html.DisplayFor(model => model.Former.Name))</h6>
       <span class="card-subtitle text-muted">@Html.DisplayFor(model => model.ReleaseDate)</span>
     </div>
     <hr />

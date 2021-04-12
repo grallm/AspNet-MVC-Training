@@ -31,7 +31,7 @@
         <div class="card-body d-flex flex-column justify-content-between">
           <div>
             <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
-            <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former.UserName))</h6>
+            <h6 class="card-subtitle mb-1 text-muted">@(item.Former == null ? "Learn4Life" : Html.DisplayFor(modelItem => item.Former.Name))</h6>
             <div class="d-flex align-items-center justify-content-between flex-wrap">
               <div class="badge bg-primary me-2 word-wrap mb-1 text-wrap">@Html.DisplayFor(modelItem => item.Category)</div>
               <span class="card-subtitle text-muted mb-1">@Html.DisplayFor(modelItem => item.ReleaseDate)</span>
