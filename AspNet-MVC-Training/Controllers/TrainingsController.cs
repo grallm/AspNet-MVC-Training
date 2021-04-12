@@ -132,11 +132,6 @@ namespace AspNet_MVC_Training.Controllers
         public async Task<IActionResult> Create(string Title, IFormFile Image, string Category, decimal Price, string Description, string Content, string Video)
         // public async Task<IActionResult> Create([Bind("TrainingID,Title,Image,ReleaseDate,Category,Price")] Training training)
         {
-            // Allow only logged in user to create
-            if (!User.Identity.IsAuthenticated) {
-                return View();
-            }
-
             Training training = new Training {
               Title = Title,
               Description = Description,
@@ -186,7 +181,9 @@ namespace AspNet_MVC_Training.Controllers
                 return NotFound();
             }
 
-            var training = await _context.Training.FindAsync(id);
+            var user = await _userManager.GetUserAsync(User);
+
+            var training = await _context.Training.SingleOrDefaultAsync(t => t.UserId == user.Id && t.TrainingID == id);
             if (training == null)
             {
                 return NotFound();
@@ -197,12 +194,45 @@ namespace AspNet_MVC_Training.Controllers
         // POST: Trainings/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Image,ReleaseDate,Category,Price,Former")] Training training)
+        public async Task<IActionResult> Edit(int TrainingID, string Title, IFormFile Image, string Category, decimal Price, string Description, string Content, string Video)
         {
-            if (id != training.TrainingID)
+            Training training = new Training {
+              TrainingID = TrainingID,
+              Title = Title,
+              Description = Description,
+              Content = Content,
+              Video = Video,
+              ReleaseDate = DateTime.Now,
+              Category = Category,
+              Price = Price,
+              Former = await _userManager.GetUserAsync(User)
+            };
+
+            var trainingQuery = await _context.Training.FindAsync(TrainingID);
+            _context.Entry(trainingQuery).State = EntityState.Detached;
+
+            string fileUrl = null;
+            if (Image != null && Image.Length > 0)  
+            {
+              // Delete previous image
+              new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", trainingQuery.Image)).Delete();
+
+              // Save new image
+              var fileName = Path.GetFileName(Image.FileName);
+              fileUrl = Path.Combine("images", Guid.NewGuid().ToString() + "_" + fileName);
+              var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileUrl);
+              using (var fileStream = new FileStream(filePath, FileMode.Create))
+              {
+                  await Image.CopyToAsync(fileStream);
+              }
+
+            }
+            training.Image = fileUrl ?? trainingQuery.Image;
+
+            if (TrainingID != training.TrainingID)
             {
                 return NotFound();
             }
@@ -225,7 +255,7 @@ namespace AspNet_MVC_Training.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             return View(training);
         }
