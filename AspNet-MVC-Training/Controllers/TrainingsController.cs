@@ -79,7 +79,7 @@ namespace AspNet_MVC_Training.Controllers
                 Trainings = await trainings.ToListAsync(),
                 UserFormations = registeredFormations,
                 UserCart = UserCart,
-                UserId = user.Id ?? null
+                UserId = user != null ? user.Id : null
             };
 
             return View(trainingCategoryVM);

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var defaultImg = "/images/no-img.png";
 }
 
 <h1>List of formation offers</h1>
@@ -27,7 +28,7 @@
   @foreach (var item in Model.Trainings) {
     <div class="col">
       <div class="card h-100 justify-content-between">
-        <img src="@item.Image" class="card-img-top" alt="@item.Title">
+        <img src="@(item.Image ?? defaultImg)" class="card-img-top" alt="@item.Title">
         <div class="card-body d-flex flex-column justify-content-between">
           <div>
             <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
